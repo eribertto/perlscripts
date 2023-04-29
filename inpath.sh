@@ -1,0 +1,48 @@
+#!/bin/bash
+# inpath--verifies that a program is either valid as is or can be found in the user's PATH
+
+in_path(){
+    # given a command and the PATH, tries to find the path. Returns 0 if found and executable; 1 if not
+    # Note that this temporarily modifies the IFS (internal field separator) but restores it after completion
+    cmd=$1
+    ourpath=$2
+    result=1
+    oldIFS=$IFS
+    IFS=":"
+    
+    for dir in $ourpath
+    do
+        if [ -x "$dir"/"$cmd" ]; then
+            result=0
+        fi
+    done
+    
+    IFS=$oldIFS
+    return $result
+}
+
+checkForCmdInPath(){
+    var=$1
+    if [ "$var" != "" ]; then
+        if [ "${var:0:1}" = "/" ]; then
+            if [ ! -x "$var" ]; then
+                return 1
+            fi
+            elif ! in_path "$var" "$PATH"; then
+            return 2
+        fi
+    fi
+}
+
+if [ $# -ne 1 ]; then
+    echo "Usage: $0 command" >&2
+    exit 1
+fi
+
+checkForCmdInPath "$1"
+case $? in
+    0 ) echo "$1 found in PATH" ;;
+    1 ) echo "$1 not found or not executable" ;;
+    2 ) echo "$1 not found in PATH" ;;
+esac
+exit 0
