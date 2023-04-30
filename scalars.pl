@@ -21,7 +21,19 @@ say "fred is $fred", ' ', "barney is $barney";
 my $fname = 'Eriberto';
 my $lname = 'Mendez';
 my $completeName = $fname . ' ' .  $lname;
-say "Your full name is $completeName";
+say "Your name is $completeName";
 # using the append compound operator
 $completeName .= ' Jr.';
 say "Your full name is $completeName";
+
+
+# subroutines aka functions
+sub logger {
+    my $logmessage = shift;
+    open my $logfile, ">>", "my.log" or die "Cannot open my.log: $!";
+    print $logfile $logmessage;
+}
+
+# call the subf, e.g. this will create a new file my.log in the current
+# directory
+logger("We have a logger subroutine!");
